@@ -3,12 +3,16 @@ import sequelize from "./db/sequelize.js";
 import Monitor from "./db/models/monitor.js";
 import PingResult from "./db/models/pingResult.js";
 import { startMonitoring } from "./services/monitorService.js";
+import {
+  initializeBotListener,
+  updateBotProfile,
+} from "./services/notificationsService.js";
 
 const app = express();
 
-if (!process.env.EXPRESS_PORT) {
+if (!process.env.EXPRESS_PORT || !process.env.DB_NAME) {
   throw new Error(
-    "The environment variable EXPRESS_PORT are not set. Check your .env file.",
+    "The environment variables (EXPRESS_PORT, DB_NAME) are not set. Check your .env file.",
   );
 }
 
@@ -33,6 +37,9 @@ async function initializeDatabase() {
     );
 
     await sequelize.sync({ alter: true });
+
+    await initializeBotListener();
+    await updateBotProfile();
 
     await startMonitoring();
 
