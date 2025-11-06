@@ -1,0 +1,51 @@
+import express from "express";
+import sequelize from "./db/sequelize.js";
+import Monitor from "./db/models/monitor.js";
+import PingResult from "./db/models/pingResult.js";
+import { startMonitoring } from "./services/monitorService.js";
+
+const app = express();
+
+if (!process.env.EXPRESS_PORT) {
+  throw new Error(
+    "The environment variable EXPRESS_PORT are not set. Check your .env file.",
+  );
+}
+
+const PORT = parseInt(process.env.EXPRESS_PORT);
+
+Monitor.hasMany(PingResult, {
+  foreignKey: "monitorId",
+  as: "results",
+  onDelete: "CASCADE",
+});
+
+PingResult.belongsTo(Monitor, {
+  foreignKey: "monitorId",
+  as: "monitor",
+});
+
+async function initializeDatabase() {
+  try {
+    await sequelize.authenticate();
+    console.log(
+      `The connection to the database (${process.env.DB_NAME}) was established successfully.`,
+    );
+
+    await sequelize.sync({ alter: true });
+
+    await startMonitoring();
+
+    app.listen(PORT, () => {
+      console.log(`Express server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error(
+      "Error when initializing the database and starting the server:",
+      error,
+    );
+    process.exit(1);
+  }
+}
+
+initializeDatabase();
