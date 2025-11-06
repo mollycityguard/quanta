@@ -1,7 +1,7 @@
 {
   "name": "quanta",
   "version": "0.0.0",
-  "description": "Website Monitoring Service",
+  "description": "Web Monitoring Service",
   "private": true,
   "type": "module",
   "scripts": {
