@@ -1,17 +1,32 @@
 {
   "name": "quanta",
+  "version": "0.0.0",
+  "description": "Website Monitoring Service",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "prepare": "husky",
+    "format": "npx prettier --write .",
+    "check-format": "npx prettier --check .",
+    "changelog": "npx conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0",
+    "release:patch": "npm version patch -m \"feat: bump to %s\" && npm run changelog && git add CHANGELOG.md && git commit --amend --no-edit && git push --follow-tags",
+    "release:minor": "npm version minor -m \"feat: bump to %s\" && npm run changelog && git add CHANGELOG.md && git commit --amend --no-edit && git push --follow-tags",
+    "release:major": "npm version major -m \"feat: bump to %s\" && npm run changelog && git add CHANGELOG.md && git commit --amend --no-edit && git push --follow-tags"
   },
+  "author": "mollycityguard",
+  "license": "PolyForm Noncommercial 1.0.0",
   "dependencies": {
     "@react-router/node": "^7.9.2",
     "@react-router/serve": "^7.9.2",
+    "axios": "^1.13.1",
+    "express": "^5.1.0",
     "isbot": "^5.1.31",
+    "node-cron": "^4.2.1",
+    "pg": "^8.16.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router": "^7.9.2"
@@ -22,9 +37,21 @@
     "@types/node": "^22",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
-    "tailwindcss": "^4.1.13",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.1",
+    "conventional-changelog": "^7.1.1",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
+    "cross-env": "^10.1.0",
+    "get-port": "^7.1.0",
+    "husky": "^9.1.7",
+    "mkdirp": "^3.0.1",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.1.0",
+    "tailwindcss": "^4.1.16",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "wait-on": "^9.0.1"
   }
 }

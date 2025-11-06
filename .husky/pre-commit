@@ -1,0 +1,7 @@
+echo "Running Prettier auto-format..."
+
+npm run format
+
+git add .
+
+echo "Prettier check successful. Committing..."
