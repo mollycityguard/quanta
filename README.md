@@ -4,10 +4,10 @@ Quanta is a lightweight web service monitoring engine, primarily built for recre
 ---
 
 ### Features (Current Backend State)
-* **Database Connectivity:** Utilizes **PostgreSQL** via **Sequelize ORM** for persistent storage of configuration and results.
-* **Scheduled Monitoring:** Employs **`node-cron`** to run checks at defined intervals, driven by data stored in the `Monitors` table.
-* **Asynchronous HTTP Pinging:** Uses **`axios`** to perform pings against configured URLs.
-* **Notification System:** Integrates with the **Telegram Bot API** via **`Telegraf.js`**.
+* **Database Connectivity:** Utilizes `PostgreSQL` via `Sequelize ORM` for persistent storage of configuration and results.
+* **Scheduled Monitoring:** Employs `node-cron` to run checks at defined intervals, driven by data stored in the `Monitors` table.
+* **Asynchronous HTTP Pinging:** Uses `axios` to perform pings against configured URLs.
+* **Notification System:** Integrates with the Telegram Bot API via `Telegraf.js`.
 * **Logging:** Stores status, status codes, and response times in the `PingResults` table.
 
 ---
