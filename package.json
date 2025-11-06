@@ -1,6 +1,6 @@
 {
   "name": "quanta",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Web Monitoring Service",
   "private": true,
   "type": "module",
@@ -14,10 +14,9 @@
     "prepare": "husky",
     "format": "npx prettier --write .",
     "check-format": "npx prettier --check .",
-    "changelog": "npx conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0",
-    "release:patch": "npm version patch -m \"feat: bump to %s\" && npm run changelog && git add CHANGELOG.md && git commit --amend --no-edit && git push --follow-tags",
-    "release:minor": "npm version minor -m \"feat: bump to %s\" && npm run changelog && git add CHANGELOG.md && git commit --amend --no-edit && git push --follow-tags",
-    "release:major": "npm version major -m \"feat: bump to %s\" && npm run changelog && git add CHANGELOG.md && git commit --amend --no-edit && git push --follow-tags"
+    "release:patch": "npm version patch -m \"feat: bump to %s\" && git commit --amend --no-edit && git push --follow-tags",
+    "release:minor": "npm version minor -m \"feat: bump to %s\" && git commit --amend --no-edit && git push --follow-tags",
+    "release:major": "npm version major -m \"feat: bump to %s\" && git commit --amend --no-edit && git push --follow-tags"
   },
   "author": "mollycityguard",
   "license": "PolyForm Noncommercial 1.0.0",
@@ -46,8 +45,6 @@
     "@types/react-dom": "^19.1.9",
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.2.1",
-    "conventional-changelog": "^7.1.1",
-    "conventional-changelog-conventionalcommits": "^9.1.0",
     "cross-env": "^10.1.0",
     "get-port": "^7.1.0",
     "husky": "^9.1.7",
