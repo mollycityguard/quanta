@@ -59,3 +59,40 @@ export const getResultById = async (req, res) => {
     });
   }
 };
+
+export const getLatestPingResult = async (req, res) => {
+  const { monitorId } = req.params;
+
+  if (!monitorId) {
+    return res.status(400).json({ message: "Monitor ID is required." });
+  }
+
+  try {
+    const latestResult = await PingResult.findOne({
+      where: { monitorId },
+      order: [["timestamp", "DESC"]],
+    });
+
+    if (!latestResult) {
+      return res.status(404).json({
+        message: `No ping results found for Monitor ID ${monitorId}.`,
+      });
+    }
+
+    return res.json(latestResult);
+  } catch (error) {
+    if (
+      error.message &&
+      error.message.includes("invalid input syntax for type uuid")
+    ) {
+      return res.status(400).json({
+        message: "Invalid Monitor ID format.",
+      });
+    }
+
+    return res.status(500).json({
+      message:
+        "An internal server error occurred while fetching the latest ping result.",
+    });
+  }
+};

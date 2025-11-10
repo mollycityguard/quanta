@@ -16,7 +16,7 @@ app.use(express.json());
 
 app.use("/api/monitors", monitorRoutes);
 app.use("/api/settings", settingsRoutes);
-app.use("/api/results", resultsRoutes);
+app.use("/api/monitors/:monitorId/pings", resultsRoutes);
 
 if (!process.env.EXPRESS_PORT || !process.env.DB_NAME) {
   throw new Error(

@@ -20,7 +20,7 @@ const Monitor = sequelize.define(
     },
     interval: {
       type: DataTypes.INTEGER,
-      defaultValue: 5,
+      defaultValue: 1,
     },
     isActive: {
       type: DataTypes.BOOLEAN,

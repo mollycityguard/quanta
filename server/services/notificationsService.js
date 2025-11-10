@@ -2,6 +2,10 @@ import { Telegraf } from "telegraf";
 import Settings from "../db/models/settings.js";
 
 let botInstance = null;
+let isListenerLaunched = false;
+
+const TELEGRAM_BOT_TOKEN = "TELEGRAM_BOT_TOKEN";
+const TELEGRAM_CHAT_ID = "TELEGRAM_CHAT_ID";
 
 async function getTelegramBot() {
   if (botInstance) {
@@ -9,7 +13,7 @@ async function getTelegramBot() {
   }
 
   const tokenRecord = await Settings.findOne({
-    where: { key: "TELEGRAM_BOT_TOKEN" },
+    where: { key: TELEGRAM_BOT_TOKEN },
   });
 
   if (tokenRecord && tokenRecord.value) {
@@ -24,6 +28,10 @@ async function getTelegramBot() {
 }
 
 export async function initializeBotListener() {
+  if (isListenerLaunched) {
+    return;
+  }
+
   const bot = await getTelegramBot();
 
   if (!bot) {
@@ -35,16 +43,19 @@ export async function initializeBotListener() {
     const userName = ctx.from.username || "User";
 
     await Settings.upsert({
-      key: "TELEGRAM_CHAT_ID",
+      key: TELEGRAM_CHAT_ID,
       value: chatId,
     });
 
     console.log(`Chat ID (${chatId}) successfully saved for ${userName}.`);
-    ctx.reply(`You have successfully enabled Quanta monitoring.`);
+    ctx.reply(
+      `You have successfully enabled Quanta monitoring. Chat ID: ${chatId}`,
+    );
   });
 
   try {
     bot.launch();
+    isListenerLaunched = true;
     console.log(
       "Telegraf Listener is launched. Waiting for the /start to save the Chat ID.",
     );
@@ -53,13 +64,26 @@ export async function initializeBotListener() {
   }
 }
 
+export async function stopBotListener() {
+  if (botInstance) {
+    try {
+      await botInstance.stop("SERVER_RESTART");
+      console.log("Telegraf listener stopped.");
+    } catch (error) {
+      console.error("Error stopping Telegraf listener:", error.message);
+    }
+  }
+  botInstance = null;
+  isListenerLaunched = false;
+}
+
 export async function sendTelegramNotification(message) {
   const bot = await getTelegramBot();
 
   if (!bot) return;
 
   const chatIdRecord = await Settings.findOne({
-    where: { key: "TELEGRAM_CHAT_ID" },
+    where: { key: TELEGRAM_CHAT_ID },
   });
   const chatId = chatIdRecord ? chatIdRecord.value : null;
 

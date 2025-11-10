@@ -1,4 +1,8 @@
 import Settings from "../db/models/settings.js";
+import {
+  initializeBotListener,
+  stopBotListener,
+} from "../services/notificationsService.js";
 
 const TELEGRAM_BOT_TOKEN = "TELEGRAM_BOT_TOKEN";
 const TELEGRAM_CHAT_ID = "TELEGRAM_CHAT_ID";
@@ -26,12 +30,6 @@ export const getSettingByKey = async (req, res) => {
   try {
     const key = req.params.key;
 
-    if (key === TELEGRAM_BOT_TOKEN) {
-      return res.status(403).json({
-        message: "Access to the raw bot token is forbidden.",
-      });
-    }
-
     const setting = await Settings.findOne({ where: { key } });
 
     if (!setting) {
@@ -39,6 +37,11 @@ export const getSettingByKey = async (req, res) => {
         message: `Setting with key ${key} not found.`,
       });
     }
+
+    if (key === TELEGRAM_BOT_TOKEN) {
+      return res.json({ key: setting.key, value: "EXISTS" });
+    }
+
     return res.json({ key: setting.key, value: setting.value });
   } catch (error) {
     return res.status(500).json({
@@ -68,6 +71,12 @@ export const updateSettingByKey = async (req, res) => {
       { key, value },
       { returning: true },
     );
+
+    if (key === TELEGRAM_BOT_TOKEN) {
+      await stopBotListener();
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      initializeBotListener();
+    }
 
     return res.json({ key: setting.key, value: setting.value, created });
   } catch (error) {
