@@ -35,7 +35,9 @@ async function checkMonitor(monitor) {
   });
 
   if (status === "DOWN") {
-    const message = `Service "${monitor.name}" (${monitor.url}) is down! Code: ${statusCode || "No response"}. Response time: ${responseTime} ms.`;
+    const message = `Service "${monitor.name}" (${monitor.url}) is down! Code: ${
+      statusCode || "No response"
+    }. Response time: ${responseTime} ms.`;
     sendTelegramNotification(message);
     console.log(message);
   } else {
@@ -45,7 +47,7 @@ async function checkMonitor(monitor) {
   }
 }
 
-function scheduleMonitor(monitor) {
+export function scheduleMonitor(monitor) {
   if (activeJobs.has(monitor.id)) {
     activeJobs.get(monitor.id).stop();
     activeJobs.delete(monitor.id);
@@ -60,7 +62,6 @@ function scheduleMonitor(monitor) {
     },
     {
       scheduled: true,
-      timezone: "Europe/Moscow", // TODO: Сделать так, чтобы часовой пояс можно было выбрать в интерфейсе приложения
     },
   );
 
@@ -68,8 +69,30 @@ function scheduleMonitor(monitor) {
   console.log(`Task is scheduled for "${monitor.name}": ${cronExpression}`);
 }
 
+export function cancelMonitor(monitorId) {
+  if (activeJobs.has(monitorId)) {
+    activeJobs.get(monitorId).stop();
+    activeJobs.delete(monitorId);
+    console.log(`Cron task for Monitor ID ${monitorId} has been canceled.`);
+    return true;
+  }
+  return false;
+}
+
+export function rescheduleMonitor(monitor) {
+  cancelMonitor(monitor.id);
+
+  if (monitor.isActive) {
+    scheduleMonitor(monitor);
+    console.log(`Cron task for "${monitor.name}" updated and restarted.`);
+  }
+}
+
 export async function startMonitoring() {
   try {
+    activeJobs.forEach((job) => job.stop());
+    activeJobs.clear();
+
     const monitors = await Monitor.findAll({
       where: { isActive: true },
     });

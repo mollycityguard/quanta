@@ -3,12 +3,15 @@ import sequelize from "./db/sequelize.js";
 import Monitor from "./db/models/monitor.js";
 import PingResult from "./db/models/pingResult.js";
 import { startMonitoring } from "./services/monitorService.js";
+import monitorRoutes from "./routes/monitorRoutes.js";
 import {
   initializeBotListener,
   updateBotProfile,
 } from "./services/notificationsService.js";
 
 const app = express();
+app.use(express.json());
+app.use("/api/monitors", monitorRoutes);
 
 if (!process.env.EXPRESS_PORT || !process.env.DB_NAME) {
   throw new Error(
