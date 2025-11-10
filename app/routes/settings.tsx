@@ -221,7 +221,7 @@ export default function SettingsPage() {
       {showFormAlways && (
         <Form
           method="post"
-          className="space-y-6 bg-[#121213] p-8 rounded-2xl shadow-lg border border border-[#6C97D8]/10 hover:border-[#6C97D8]/30 transition duration-300"
+          className="space-y-6 bg-[#121213] p-8 rounded-2xl shadow-lg border border-[#6C97D8]/10 hover:border-[#6C97D8]/30 transition duration-300"
         >
           <h2 className="text-xl font-semibold mb-4 text-[#FFFFFF]">
             {tokenExists

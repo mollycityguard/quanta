@@ -10,8 +10,16 @@ import {
   initializeBotListener,
   updateBotProfile,
 } from "./services/notificationsService.js";
+import cors from "cors";
 
 const app = express();
+
+const corsOptions = {
+  origin: "http://localhost:5173",
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/monitors", monitorRoutes);
