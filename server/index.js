@@ -4,6 +4,7 @@ import PingResult from "./db/models/pingResult.js";
 import sequelize from "./db/sequelize.js";
 import monitorRoutes from "./routes/monitorRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
+import resultsRoutes from "./routes/resultsRoutes.js";
 import { startMonitoring } from "./services/monitorService.js";
 import {
   initializeBotListener,
@@ -15,6 +16,7 @@ app.use(express.json());
 
 app.use("/api/monitors", monitorRoutes);
 app.use("/api/settings", settingsRoutes);
+app.use("/api/results", resultsRoutes);
 
 if (!process.env.EXPRESS_PORT || !process.env.DB_NAME) {
   throw new Error(
