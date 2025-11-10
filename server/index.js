@@ -1,9 +1,10 @@
 import express from "express";
-import sequelize from "./db/sequelize.js";
 import Monitor from "./db/models/monitor.js";
 import PingResult from "./db/models/pingResult.js";
-import { startMonitoring } from "./services/monitorService.js";
+import sequelize from "./db/sequelize.js";
 import monitorRoutes from "./routes/monitorRoutes.js";
+import settingsRoutes from "./routes/settingsRoutes.js";
+import { startMonitoring } from "./services/monitorService.js";
 import {
   initializeBotListener,
   updateBotProfile,
@@ -11,7 +12,9 @@ import {
 
 const app = express();
 app.use(express.json());
+
 app.use("/api/monitors", monitorRoutes);
+app.use("/api/settings", settingsRoutes);
 
 if (!process.env.EXPRESS_PORT || !process.env.DB_NAME) {
   throw new Error(
