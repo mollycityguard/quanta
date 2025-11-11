@@ -212,9 +212,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const interval = parseInt(formData.get("interval") as string) || 0;
 
-    // --- ИЗМЕНЕНИЕ: Установка isActive в true по умолчанию ---
-    const isActive = true; // Принудительно устанавливаем активным
-    // --------------------------------------------------------
+    const isActive = true;
 
     const errors = validateNewMonitor(name, url, interval);
 
@@ -277,7 +275,7 @@ const MonitorDeleteForm = ({ monitorId }: { monitorId: string }) => {
         type="submit"
         onClick={confirmDeletion}
         aria-label="Delete Monitor"
-        className="cursor-pointer text-[#9a9a9b] hover:text-red-500 transition duration-150 p-1 rounded-full bg-transparent focus:outline-none focus:ring-2 focus:ring-red-500/50"
+        className="cursor-pointer text-[#9a9a9b] hover:text-[#FA5252] transition duration-150 p-1 rounded-full bg-transparent focus:outline-none focus:ring-1 focus:ring-offset-0 focus:ring-[#FA5252]"
       >
         <svg
           className="h-4 w-4"
@@ -299,38 +297,26 @@ const MonitorDeleteForm = ({ monitorId }: { monitorId: string }) => {
 
 const MonitorCard = ({ monitor }: { monitor: MonitorDisplay }) => {
   let statusColor = "text-[#9a9a9b]";
-
-  let statusBg = "bg-[#9a9a9b]/12";
-
+  let statusBg = "bg-[#9a9a9b]/10";
   let statusText = "INACTIVE";
-
-  let cardBorder = "border-[#808081]/20";
+  let cardBorder = "border-[#9a9a9b]";
 
   if (monitor.isActive) {
     if (monitor.currentStatus === "UP") {
-      statusColor = "text-green-400";
-
-      statusBg = "bg-green-900/30";
-
+      statusColor = "text-[#40C057]";
+      statusBg = "bg-[#40C057]/10";
       statusText = "UP";
-
-      cardBorder = "border-green-500/30";
+      cardBorder = "border-[#40C057]";
     } else if (monitor.currentStatus === "DOWN") {
-      statusColor = "text-red-400";
-
-      statusBg = "bg-red-900/30";
-
+      statusColor = "text-[#FA5252]";
+      statusBg = "bg-[#FA5252]/10";
       statusText = "DOWN";
-
-      cardBorder = "border-red-500/30";
+      cardBorder = "border-[#FA5252]";
     } else {
-      statusColor = "text-yellow-400";
-
-      statusBg = "bg-yellow-900/30";
-
+      statusColor = "text-[#FAB005]";
+      statusBg = "bg-[#FAB005]/10";
       statusText = "PENDING";
-
-      cardBorder = "border-yellow-500/30";
+      cardBorder = "border-[#FAB005]";
     }
   }
 
@@ -339,12 +325,21 @@ const MonitorCard = ({ monitor }: { monitor: MonitorDisplay }) => {
       ? `${monitor.latestResponseTime} ms`
       : "N/A";
 
-  const responseTimeColor =
-    monitor.latestResponseTime === null || monitor.currentStatus === "DOWN"
-      ? "text-red-400"
-      : monitor.latestResponseTime && monitor.latestResponseTime > 1000
-        ? "text-yellow-400"
-        : "text-green-400";
+  let responseTimeColor = "text-[#9a9a9b]";
+
+  if (monitor.latestResponseTime !== null && monitor.currentStatus !== "DOWN") {
+    if (monitor.latestResponseTime > 1000) {
+      responseTimeColor = "text-[#FA5252]";
+    } else if (monitor.latestResponseTime > 500) {
+      responseTimeColor = "text-[#FAB005]";
+    } else {
+      responseTimeColor = "text-[#40C057]";
+    }
+  } else if (monitor.currentStatus === "DOWN") {
+    responseTimeColor = "text-[#FA5252]";
+  } else {
+    responseTimeColor = "text-[#9a9a9b]";
+  }
 
   const lastCheckedText = monitor.lastCheckedTime
     ? new Date(monitor.lastCheckedTime).toLocaleTimeString()
@@ -352,12 +347,10 @@ const MonitorCard = ({ monitor }: { monitor: MonitorDisplay }) => {
 
   return (
     <div
-      className={`relative bg-[#0f0f11] p-6 rounded-2xl shadow-lg border ${cardBorder} transition duration-300 overflow-hidden`}
+      className={`relative bg-[#0F0F11] p-6 rounded-xl border border-solid ${cardBorder} transition duration-300 overflow-hidden`}
     >
-      <div className="absolute inset-0 pointer-events-none rounded-2xl opacity-10 border border-solid border-[#6C97D8]/6 z-0"></div>
-
       <div className="flex justify-between items-start mb-4">
-        <h3 className="text-xl font-bold text-[#FFFFFF] truncate tracking-tight">
+        <h3 className="text-xl font-bold text-[#EEEEEE] truncate tracking-tight">
           {monitor.name}
         </h3>
 
@@ -370,16 +363,11 @@ const MonitorCard = ({ monitor }: { monitor: MonitorDisplay }) => {
 
       <div className="space-y-2 text-sm text-[#9a9a9b]">
         <p className="truncate">
-          <span className="font-medium text-[#FFFFFF]">URL:</span> {monitor.url}
+          <span className="font-medium text-[#EEEEEE]">URL:</span> {monitor.url}
         </p>
 
         <p>
-          <span className="font-medium text-[#FFFFFF]">Interval:</span>{" "}
-          {monitor.interval} min
-        </p>
-
-        <p>
-          <span className="font-medium text-[#FFFFFF]">Response Time:</span>{" "}
+          <span className="font-medium text-[#EEEEEE]">Response Time:</span>{" "}
           <span className={`font-bold ${responseTimeColor}`}>
             {responseTimeText}
           </span>
@@ -387,17 +375,17 @@ const MonitorCard = ({ monitor }: { monitor: MonitorDisplay }) => {
 
         {monitor.currentStatus === "DOWN" && monitor.latestStatusCode && (
           <p>
-            <span className="font-medium text-[#FFFFFF]">Status Code:</span>{" "}
-            <span className="font-bold text-red-400">
+            <span className="font-medium text-[#EEEEEE]">Status Code:</span>{" "}
+            <span className="font-bold text-[#FA5252]">
               {monitor.latestStatusCode}
             </span>
           </p>
         )}
       </div>
 
-      <div className="flex justify-between items-center mt-5 pt-3 border-t border-dashed border-[#808081]/18">
+      <div className="flex justify-between items-center mt-5 pt-3 border-t border-dashed border-[#ffffff]">
         <p className="text-xs text-[#9a9a9b]">
-          Last Checked: {lastCheckedText}
+          Last Checked: {lastCheckedText} \ Every {monitor.interval} min
         </p>
 
         <MonitorDeleteForm monitorId={monitor.id} />
@@ -410,9 +398,9 @@ const AddMonitorCard = ({ onClick }: { onClick: () => void }) => {
   return (
     <div
       onClick={onClick}
-      className="bg-[#0f0f11] p-6 rounded-2xl shadow-lg border border-dashed border-[#6C97D8]/30 transition duration-300 hover:border-[#6C97D8] cursor-pointer flex items-center justify-center h-full min-h-[200px]"
+      className="bg-[#0F0F11] p-6 rounded-xl border border-dashed border-[#9a9a9b] transition duration-300 hover:border-[#ffffff] cursor-pointer flex items-center justify-center h-full min-h-[200px]"
     >
-      <div className="flex flex-col items-center text-[#6C97D8]/80 hover:text-[#6C97D8] transition duration-300">
+      <div className="flex flex-col items-center text-[#9a9a9b] hover:text-[#EEEEEE] transition duration-300">
         <svg
           className="h-12 w-12 mb-2"
           fill="none"
@@ -426,8 +414,6 @@ const AddMonitorCard = ({ onClick }: { onClick: () => void }) => {
             d="M12 4v16m8-8H4"
           />
         </svg>
-
-        <span className="font-semibold text-lg">Add New Monitor</span>
       </div>
     </div>
   );
@@ -444,31 +430,7 @@ const NewMonitorModal = ({
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75">
-      <div className="bg-[#121213] p-8 rounded-2xl shadow-2xl max-w-lg w-full m-4 border border-[#6C97D8]/10 relative">
-        <h2 className="text-2xl font-bold mb-6 text-[#FFFFFF]">
-          Add New Monitor
-        </h2>
-
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-[#9a9a9b] hover:text-red-500 transition duration-150 p-2"
-          aria-label="Close"
-        >
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-
+      <div className="bg-[#121213] p-8 rounded-xl max-w-lg w-full m-4 border border-solid border-[#9a9a9b] relative">
         <Form method="post" className="space-y-4">
           <input type="hidden" name="intent" value="create" />
 
@@ -485,15 +447,13 @@ const NewMonitorModal = ({
               id="name"
               name="name"
               required
-              className={`w-full p-3 rounded-lg border bg-[#0b0b0d] text-[#FFFFFF] focus:outline-none focus:ring-2 ${
-                errors?.name
-                  ? "border-red-500 focus:ring-red-500/50"
-                  : "border-[#808081]/30 focus:border focus:border-dashed focus:border-[#6C97D8]/60 focus:ring-[#6C97D800]"
+              className={`w-full p-3 rounded-xl border border-solid bg-[#0B0B0D] text-[#EEEEEE] focus:outline-none focus:ring-0 focus:border-[#9a9a9b] focus:brightness-150 ${
+                errors?.name ? "border-[#FA5252]" : "border-[#9a9a9b]"
               }`}
             />
 
             {errors?.name && (
-              <p className="mt-1 text-xs text-red-400">{errors.name}</p>
+              <p className="mt-1 text-xs text-[#FA5252]">{errors.name}</p>
             )}
           </div>
 
@@ -511,15 +471,13 @@ const NewMonitorModal = ({
               name="url"
               required
               placeholder="https://example.com"
-              className={`w-full p-3 rounded-lg border bg-[#0b0b0d] text-[#FFFFFF] focus:outline-none focus:ring-2 ${
-                errors?.url
-                  ? "border-red-500 focus:ring-red-500/50"
-                  : "border-[#808081]/30 focus:border focus:border-dashed focus:border-[#6C97D8]/60 focus:ring-[#6C97D800]"
+              className={`w-full p-3 rounded-xl border border-solid bg-[#0B0B0D] text-[#EEEEEE] focus:outline-none focus:ring-0 focus:border-[#9a9a9b] focus:brightness-150 ${
+                errors?.url ? "border-[#FA5252]" : "border-[#9a9a9b]"
               }`}
             />
 
             {errors?.url && (
-              <p className="mt-1 text-xs text-red-400">{errors.url}</p>
+              <p className="mt-1 text-xs text-[#FA5252]">{errors.url}</p>
             )}
           </div>
 
@@ -539,32 +497,28 @@ const NewMonitorModal = ({
               min="1"
               max="1440"
               defaultValue="1"
-              className={`w-full p-3 rounded-lg border bg-[#0b0b0d] text-[#FFFFFF] focus:outline-none focus:ring-2 ${
-                errors?.interval
-                  ? "border-red-500 focus:ring-red-500/50"
-                  : "border-[#808081]/30 focus:border focus:border-dashed focus:border-[#6C97D8]/60 focus:ring-[#6C97D800]"
+              className={`w-full p-3 rounded-xl border border-solid bg-[#0B0B0D] text-[#EEEEEE] focus:outline-none focus:ring-0 focus:border-[#9a9a9b] focus:brightness-150 ${
+                errors?.interval ? "border-[#FA5252]" : "border-[#9a9a9b]"
               }`}
             />
 
             {errors?.interval && (
-              <p className="mt-1 text-xs text-red-400">{errors.interval}</p>
+              <p className="mt-1 text-xs text-[#FA5252]">{errors.interval}</p>
             )}
           </div>
-
-          {/* Удален чекбокс isActive, так как по умолчанию он должен быть активен */}
 
           <div className="pt-4 flex justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="py-2 px-4 border border-[#808081]/30 cursor-pointer shadow-sm text-sm font-medium rounded-lg text-[#9a9a9b] bg-transparent hover:bg-[#808081]/10 transition duration-200"
+              className="py-2 px-4 border border-dashed border-[#ffffff] cursor-pointer text-sm font-medium rounded-xl text-[#9a9a9b] bg-transparent hover:bg-[#9a9a9b]/10 transition duration-200"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="py-2 px-4 border border-dashed border-[#6C97D8]/50 shadow-md text-sm font-medium rounded-lg text-[#FFFFFF] bg-transparent hover:bg-[#6C97D8]/10 transition duration-200 cursor-pointer focus:outline-none focus:ring-transparent focus:ring-offset-[#0b0b0d] focus:ring-offset-2"
+              className="py-2 px-4 border border-dashed border-[#ffffff] text-sm font-medium rounded-xl text-[#FFFFFF] bg-transparent hover:bg-[#ffffff]/10 transition duration-200 cursor-pointer focus:outline-none focus:ring-0"
             >
               Create Monitor
             </button>
@@ -610,14 +564,14 @@ export default function HomePage() {
       : undefined;
 
   return (
-    <main className="p-10 max-w-7xl mx-auto bg-[#0b0b0d] min-h-screen">
+    <main className="p-10 max-w-7xl mx-auto bg-[#0B0B0D] min-h-screen">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {monitors.length > 0 ? (
           monitors.map((monitor) => (
             <MonitorCard key={monitor.id} monitor={monitor} />
           ))
         ) : (
-          <div className="text-[#9a9a9b] col-span-full p-8 bg-[#121213] border border-dashed border-[#808081]/18 rounded-2xl text-center">
+          <div className="text-[#9a9a9b] col-span-full p-8 bg-[#121213] border border-dashed border-[#ffffff] rounded-xl text-center">
             No monitors configured. Click "Add New Monitor" to get started.
           </div>
         )}
